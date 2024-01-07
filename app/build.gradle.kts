@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    kotlin("plugin.serialization") version "1.9.22"
 }
 
 android {
@@ -81,4 +82,23 @@ dependencies {
     implementation(libs.accompanist.permissions)
 
     implementation(libs.coil.kt.compose)
+
+    // orbit mvi
+    implementation("org.orbit-mvi:orbit-viewmodel:4.5.0")
+    implementation("org.orbit-mvi:orbit-compose:4.5.0")
+
+
+    // ktor
+    val ktor = "2.2.3"
+    implementation("io.ktor:ktor-client-core:$ktor")
+    implementation("io.ktor:ktor-client-android:$ktor")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor")
+    implementation("io.ktor:ktor-client-serialization-kotlinx-json:$ktor")
+
+//    implementation("org.jetbrains.kotlin:kotlin-serialization-json:1.6.0")
+    implementation(
+        group = "org.jetbrains.kotlinx",
+        name = "kotlinx-serialization-core-jvm",
+        version = "1.5.1"
+    )
 }
