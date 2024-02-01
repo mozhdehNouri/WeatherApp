@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kapt)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -23,11 +26,17 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            buildConfigField("String", "BASE_URL", "\"https://api.open-meteo.com/v1/\"")
+        }
+        debug {
+            isMinifyEnabled = true
+            buildConfigField("String", "BASE_URL", "\"https://api.open-meteo.com/v1/\"")
         }
     }
     compileOptions {
@@ -39,6 +48,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion =
@@ -81,4 +91,18 @@ dependencies {
     implementation(libs.accompanist.permissions)
 
     implementation(libs.coil.kt.compose)
+
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
+
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.squareup.okhttp)
+    implementation(libs.squareup.retrofit)
+    implementation(libs.squareup.retrofit.moshi)
+    implementation(libs.squareup.okhttp.logging)
+    implementation(libs.jakewharton.timber)
 }

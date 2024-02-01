@@ -24,6 +24,7 @@ initscript {
     }
 
     dependencies {
+        // code formatter you can use https://github.com/detekt/detekt which desing only for kotlin
         classpath("com.diffplug.spotless:spotless-plugin-gradle:$spotlessVersion")
     }
 }
