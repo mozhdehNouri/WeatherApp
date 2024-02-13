@@ -2,7 +2,7 @@ package com.example.weather.utils.di
 
 import android.content.Context
 import android.util.Config.DEBUG
-import com.example.weather.utils.data.CustomInterceptor
+import com.example.todoappwithcleanarchitecture.BuildConfig
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
@@ -27,40 +27,18 @@ private const val TIMEOUT = 30L
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    @Singleton
-    @Provides
-    fun providesRetrofit(
-        converterFactory: MoshiConverterFactory,
-        client: OkHttpClient,
-        baseUrl: String,
-    ): Retrofit {
-        return Retrofit.Builder()
-            .addConverterFactory(converterFactory)
-            .client(client)
-            .baseUrl(baseUrl)
-            .build()
-    }
-
-    @Singleton
-    @Provides
-    fun providesMoshiConverterFactory(moshi: Moshi): MoshiConverterFactory {
-        return MoshiConverterFactory
-            .create(moshi)
-    }
 
     @Singleton
     @Provides
     fun providesOkHttpClient(
         interceptor: HttpLoggingInterceptor,
         cache: Cache,
-        customInterceptor: CustomInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(interceptor)
+            .addNetworkInterceptor(interceptor)
             .followRedirects(true)
             .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(TIMEOUT, TimeUnit.SECONDS)
-            .addInterceptor(customInterceptor)
             .readTimeout(TIMEOUT, TimeUnit.SECONDS)
             .followSslRedirects(true)
             .retryOnConnectionFailure(true)
@@ -78,6 +56,26 @@ object NetworkModule {
                 if (DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
         }
     }
+
+    @Singleton
+    @Provides
+    fun providesRetrofit(
+        client: OkHttpClient,
+        moshi: Moshi
+    ): Retrofit {
+        return Retrofit.Builder()
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .client(client)
+            .baseUrl(BuildConfig.BASE_URL)
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideMoshi(): Moshi {
+        return Moshi.Builder().build()
+    }
+
 
     @Singleton
     @Provides
