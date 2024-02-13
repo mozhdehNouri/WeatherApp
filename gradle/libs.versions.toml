@@ -28,7 +28,7 @@ moshi = "1.15.0"
 retrofit = "2.9.0"
 compose-compiler = "1.5.4"
 coroutines = "1.7.3"
-google-maps = "18.2.0"
+google-maps = "21.0.1"
 gradle-versions = "0.50.0"
 hilt = "2.48.1"
 hiltExt = "1.1.0"
@@ -118,6 +118,7 @@ core-jdk-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.r
 google-android-material = { module = "com.google.android.material:material", version.ref = "material" }
 googlemaps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "maps-compose" }
 googlemaps-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "google-maps" }
+googlemaps-location = { module = "com.google.android.gms:play-services-location", version.ref = "google-maps" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }

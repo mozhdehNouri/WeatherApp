@@ -35,7 +35,7 @@ android {
             buildConfigField("String", "BASE_URL", "\"https://api.open-meteo.com/v1/\"")
         }
         debug {
-            isMinifyEnabled = true
+//            isMinifyEnabled = true
             buildConfigField("String", "BASE_URL", "\"https://api.open-meteo.com/v1/\"")
         }
     }
@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.androidx.lifecycle.viewModelCompose)
 
@@ -97,12 +98,16 @@ dependencies {
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.squareup.okhttp)
     implementation(libs.squareup.retrofit)
     implementation(libs.squareup.retrofit.moshi)
+    implementation(libs.squareup.moshi)
+    ksp(libs.squareup.moshi.kotlin)
     implementation(libs.squareup.okhttp.logging)
     implementation(libs.jakewharton.timber)
+    implementation(libs.googlemaps.location)
 }

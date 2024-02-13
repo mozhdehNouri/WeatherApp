@@ -12,6 +12,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * callbackFlow builder allows us to create a Flow and emit new values inside a callback.
+ */
 @Singleton
 class NetworkConnectivityObserverImpl @Inject constructor(
     @ApplicationContext private val context: Context
