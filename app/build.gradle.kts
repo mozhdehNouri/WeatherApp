@@ -80,8 +80,6 @@ dependencies {
 
     implementation(libs.androidx.activity.compose)
 
-//    implementation(libs.google.android.material)
-
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.iconsExtended)
@@ -110,4 +108,6 @@ dependencies {
     implementation(libs.squareup.okhttp.logging)
     implementation(libs.jakewharton.timber)
     implementation(libs.googlemaps.location)
+    implementation(libs.kotlinx.collections.immutable)
+
 }

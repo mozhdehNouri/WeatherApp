@@ -8,7 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.weather.ui.theme.TodoAppWithCleanArchitectureTheme
+import com.example.weather.ui.theme.WeatherAppTheme
+import com.example.weather.ui.theme.WeatherType
 import com.example.weather.utils.provideCurrentLocation
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
                 LocationServices.getFusedLocationProviderClient(this)
 
 
-            TodoAppWithCleanArchitectureTheme {
+            WeatherAppTheme(weatherType = WeatherType.ClearSkyLightColor) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
