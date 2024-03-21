@@ -1,8 +1,10 @@
 package com.example.weather.utils
 
 import androidx.annotation.DrawableRes
+import androidx.compose.runtime.Immutable
 import com.example.todoappwithcleanarchitecture.R
 
+@Immutable
 sealed class WeatherType(
     val weatherDesc: String,
     @DrawableRes val iconRes: Int
