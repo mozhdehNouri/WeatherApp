@@ -285,20 +285,20 @@ private val ThunderstormLightColorPalette = lightColorScheme(
 @Composable
 fun WeatherAppTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
-    weatherType: WeatherType,
+//    weatherType: WeatherType,
     content: @Composable () -> Unit
 ) {
 
-    val myColorScheme = when (weatherType) {
-        WeatherType.ClearSkyLightColor -> ClearSkyLightColorPalette
-        WeatherType.CloudyLightColor -> CloudyLightColorPalette
-        WeatherType.DrizzleLightColor -> DrizzleLightColorPalette
-        WeatherType.SnowLightColor -> SnowLightColorPalette
-        WeatherType.RainLightColor -> RainLightColorPalette
-        WeatherType.ThunderstormLightColor -> ThunderstormLightColorPalette
-    }
+//    val myColorScheme = when (weatherType) {
+//        WeatherType.ClearSkyLightColor -> ClearSkyLightColorPalette
+//        WeatherType.CloudyLightColor -> CloudyLightColorPalette
+//        WeatherType.DrizzleLightColor -> DrizzleLightColorPalette
+//        WeatherType.SnowLightColor -> SnowLightColorPalette
+//        WeatherType.RainLightColor -> RainLightColorPalette
+//        WeatherType.ThunderstormLightColor -> ThunderstormLightColorPalette
+//    }
     MaterialTheme(
-        colorScheme = myColorScheme,
+        colorScheme = ClearSkyLightColorPalette,
         typography = Typography,
         content = content
     )

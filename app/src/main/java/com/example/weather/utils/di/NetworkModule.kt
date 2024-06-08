@@ -82,7 +82,7 @@ object NetworkModule {
     fun providesCache(@ApplicationContext context: Context): Cache {
         return Cache(
             directory = File(context.cacheDir, CLIENT_CACHE_DIRECTORY),
-            maxSize = CLIENT_CACHE_SIZE,
+            maxSize = CLIENT_CACHE_SIZE
         )
     }
 
