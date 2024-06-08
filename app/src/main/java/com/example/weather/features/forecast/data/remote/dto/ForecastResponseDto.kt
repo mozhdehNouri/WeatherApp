@@ -1,7 +1,6 @@
 package com.example.weather.features.forecast.data.remote.dto
 
 
-import com.example.weather.features.forecast.domain.model.HourlyResponse
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -32,19 +31,4 @@ data class HourlyResponseDto(
     val visibility: List<Double>,
     @Json(name = "weather_code")
     val weatherCode: List<Int>
-) {
-    fun toHourlyDomainResponse() = HourlyResponse(
-        cloudCover = cloudCover,
-        cloudCoverHigh = cloudCoverHigh,
-        cloudCoverLow = cloudCoverLow,
-        cloudCoverMid = cloudCoverMid,
-        rain = rain,
-        showers = showers,
-        snowDepth = snowDepth,
-        snowfall = snowfall,
-        temperature2m = temperature2m,
-        time = time,
-        visibility = visibility,
-        weatherCode = weatherCode
-    )
-}
+)
