@@ -11,8 +11,8 @@ import com.example.weather.utils.WeatherType
 class ForecastDailyPreviewParameterProvider :
     PreviewParameterProvider<DailyForecastUiState> {
 
-    override val values: Sequence<DailyForecastUiState> =
-        sequenceOf(DailyForecastUiState(dailyForecastView))
+    override val values: Sequence<DailyForecastUiState.Success> =
+        sequenceOf(DailyForecastUiState.Success(dailyForecastView))
 
 }
 

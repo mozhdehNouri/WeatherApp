@@ -6,8 +6,7 @@ import androidx.compose.ui.unit.dp
 
 
 val LocalButtonPadding = staticCompositionLocalOf { ButtonContentPadding }
-val LocalScaffoldPadding =
-    staticCompositionLocalOf { ScaffoldContentPadding }
+val LocalRootPadding = staticCompositionLocalOf { RootPadding }
 val LocalTextPadding = staticCompositionLocalOf { TextContentPadding }
 val LocalRowPadding = staticCompositionLocalOf { RowContentPadding }
 val LocalColumnPadding = staticCompositionLocalOf { ColumnContentPadding }
@@ -22,8 +21,8 @@ val LocalLazyRowContentPadding =
 
 val LazyRowContentPadding = 12.dp
 val VerticalSpacerPadding = PaddingValues(vertical = 8.dp)
-val ScaffoldContentPadding =
-    PaddingValues(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 8.dp)
+val RootPadding =
+    PaddingValues(start = 12.dp, top = 8.dp, end = 12.dp, bottom = 8.dp)
 private val ButtonContentPadding =
     PaddingValues(horizontal = 4.dp, vertical = 4.dp)
 private val TextContentPadding = PaddingValues(vertical = 4.dp)

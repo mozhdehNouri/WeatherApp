@@ -43,7 +43,7 @@ fun AnimatableCloud(
 fun Cloud(modifier: Modifier = Modifier) {
 
     Image(
-        imageVector = ImageVector.vectorResource(id = R.drawable.ic_cloudy),
+        imageVector = ImageVector.vectorResource(id = R.drawable.ic_cloudy_1),
         contentDescription = "",
         modifier = modifier.clearAndSetSemantics { }
     )

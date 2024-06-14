@@ -65,7 +65,7 @@ fun AnimatableThunder(
 fun Thunder(modifier: Modifier = Modifier) {
 
     Image(
-        imageVector = ImageVector.vectorResource(id = R.drawable.ic_thunder),
+        imageVector = ImageVector.vectorResource(id = R.drawable.ic_foggy_1),
         contentDescription = "",
         modifier = modifier.clearAndSetSemantics { }
     )

@@ -108,4 +108,8 @@ dependencies {
     implementation(libs.jakewharton.timber)
     implementation(libs.googlemaps.location)
     implementation(libs.kotlinx.collections.immutable)
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation(libs.kotlin.coroutines.play)
+    implementation(libs.play.services.location)
 }

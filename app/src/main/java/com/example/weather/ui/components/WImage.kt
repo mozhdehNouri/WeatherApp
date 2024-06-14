@@ -16,6 +16,7 @@ fun WImage(
     Image(
         painter = painterResource(id = imageId),
         contentDescription = null,
-        contentScale = contentScale
+        contentScale = contentScale,
+        modifier = modifier
     )
 }
