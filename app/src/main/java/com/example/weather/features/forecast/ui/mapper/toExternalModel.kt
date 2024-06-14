@@ -4,7 +4,7 @@ import com.example.weather.features.forecast.domain.model.DailyForecast
 import com.example.weather.features.forecast.ui.DailyForecastView
 import com.example.weather.utils.WeatherType
 
-fun DailyForecast.toExternalModel() = DailyForecastView(
+private fun DailyForecast.toExternalModel() = DailyForecastView(
     cloudCover = cloudCover,
     cloudCoverHigh = cloudCoverHigh,
     cloudCoverLow = cloudCoverLow,

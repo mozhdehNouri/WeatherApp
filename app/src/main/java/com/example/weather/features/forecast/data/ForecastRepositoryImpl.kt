@@ -1,8 +1,10 @@
 package com.example.weather.features.forecast.data
 
 import android.content.Context
+import androidx.datastore.preferences.core.Preferences
 import com.example.weather.features.forecast.data.local.ForecastLocalDataSource
 import com.example.weather.features.forecast.data.local.entites.DailyForecastEntity
+import com.example.weather.features.forecast.data.local.entites.LocationInfo
 import com.example.weather.features.forecast.data.local.entites.mapper.toExternalModel
 import com.example.weather.features.forecast.data.remote.ForecastRemoteDataSource
 import com.example.weather.features.forecast.domain.model.DailyForecast
@@ -28,8 +30,7 @@ class ForecastRepositoryImpl @Inject constructor(
             return AppResult.Error(error = "No Internet connection")
         }
         val result = remoteDataSource.getForecast(
-            latitude = latitude, longitude
-            = longitude
+            latitude = latitude, longitude = longitude
         ).toAppResult()
 
         return when (result) {
@@ -51,12 +52,18 @@ class ForecastRepositoryImpl @Inject constructor(
                                 temperature2m = response.temperature2m[index],
                                 time,
                                 visibility = response.visibility[index],
-                                weatherCode = response.weatherCode[index]
+                                weatherCode = response.weatherCode[index],
                             )
                         )
                     }
                 }
-                localDataSource.addDailyForecast(dailyForecastList)
+                localDataSource.addDailyForecast(
+                    dailyForecast = dailyForecastList,
+                    locationInfo = LocationInfo(
+                        latitude = result.data.latitude,
+                        longitude = result.data.longitude
+                    )
+                )
 
                 AppResult.Success(true)
             }
@@ -69,4 +76,11 @@ class ForecastRepositoryImpl @Inject constructor(
 
     override fun getDailyForecastFromDatabase(): Flow<List<DailyForecast>> =
         localDataSource.getDailyForecast().map { it.toExternalModel() }
+
+
+    override fun isFirstTimeRead(): Flow<Preferences> =
+        localDataSource.isFirstTimeRead()
+
+    override fun isFirstTimeWrite(): Flow<Boolean> =
+        localDataSource.isFirstTimeWrite()
 }

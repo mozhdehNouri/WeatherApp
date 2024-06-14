@@ -7,7 +7,9 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class ForecastResponseDto(
     @Json(name = "hourly")
-    val hourly: HourlyResponseDto
+    val hourly: HourlyResponseDto,
+    val latitude: Float,
+    val longitude: Float
 )
 
 @JsonClass(generateAdapter = true)

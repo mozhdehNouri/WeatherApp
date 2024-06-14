@@ -9,9 +9,9 @@ import com.example.weather.utils.ui.DevicePreviews
 @Composable
 fun ForecastNewPreview(
     @PreviewParameter(ForecastDailyPreviewParameterProvider::class)
-    dailyForecast: DailyForecastUiState,
+    uiState: List<DailyForecastView>
 ) {
     WeatherAppTheme {
-        DailyForeCastScreenBody(dailyForecast)
+        DailyForeCastScreenBody(uiState)
     }
 }

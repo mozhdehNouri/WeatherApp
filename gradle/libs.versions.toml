@@ -54,6 +54,7 @@ landscapist = "2.2.13"
 # @keep
 targetSdk = "33"
 version-catalog-update = "0.8.1"
+play-services-location = "21.1.0"
 
 [libraries]
 accompanist-adaptive = { module = "com.google.accompanist:accompanist-adaptive", version.ref = "accompanist" }
@@ -153,6 +154,8 @@ squareup-retrofit-moshi = { module = "com.squareup.retrofit2:converter-moshi", v
 androidx-startup = { module = "androidx.startup:startup-runtime", version = "1.1.1" }
 google-accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }
 jakewharton-timber = { module = "com.jakewharton.timber:timber", version = "5.0.1" }
+kotlin-coroutines-play = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

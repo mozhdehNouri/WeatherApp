@@ -12,15 +12,9 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,14 +27,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 
 const val CycleDuration = 1_000
 
 @Composable
-private fun WLoading_Text(
+fun WLoading_Text(
     modifier: Modifier = Modifier,
     cycleDuration: Int = CycleDuration,
     text: String,
@@ -71,7 +62,7 @@ private fun WLoading_Text(
 }
 
 @Composable
-private fun WHorizontalLoadingCircles(
+fun WHorizontalLoadingCircles(
     modifier: Modifier = Modifier,
     color: Color = contentColorFor(backgroundColor = LocalContentColor.current),
     radius: Int,
@@ -132,46 +123,5 @@ private fun WHorizontalLoadingCircles(
                 }
             }
         )
-    }
-}
-
-@Composable
-fun LoadingDialog(
-    message: String? = null,
-    dismissRequest: () -> Unit
-) {
-    // https://medium.com/@kappdev/dotted-text-animation-custom-loading-dialog-in-jetpack-compose-17da8dee52f0
-    Dialog(
-        onDismissRequest = dismissRequest,
-        properties = DialogProperties(
-            dismissOnBackPress = false, dismissOnClickOutside = false
-        )
-    ) {
-        Surface(
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(16.dp)
-            ) {
-
-                WHorizontalLoadingCircles(
-                    radius = 15,
-                    count = 3,
-                    padding = 10
-                )
-
-                if (!message.isNullOrBlank()) {
-                    WLoading_Text(
-                        text = message,
-                        modifier = Modifier.fillMaxWidth(),
-                        style = MaterialTheme.typography.headlineSmall,
-                        textColor = MaterialTheme.colorScheme.onSurface
-
-                    )
-                }
-            }
-        }
     }
 }

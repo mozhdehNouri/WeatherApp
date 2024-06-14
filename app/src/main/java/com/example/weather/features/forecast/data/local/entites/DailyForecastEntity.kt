@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class DailyForecastEntity(
+data class DailyForecastEntity internal constructor(
     @PrimaryKey(autoGenerate = false)
     val index: Int,
     val cloudCover: Int,
@@ -19,4 +19,12 @@ data class DailyForecastEntity(
     val time: String,
     val visibility: Double,
     val weatherCode: Int
+)
+
+@Entity
+data class LocationInfo(
+    @PrimaryKey(autoGenerate = false)
+    val index: Int = 0,
+    val latitude: Float,
+    val longitude: Float
 )
