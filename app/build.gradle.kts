@@ -112,4 +112,5 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.play.services.location)
+    implementation("androidx.palette:palette-ktx:1.0.0")
 }

@@ -1,23 +1,24 @@
 package com.example.weather.features.forecast.ui
 
-import android.content.Context
-import android.content.ContextWrapper
-import androidx.activity.ComponentActivity
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -47,6 +48,8 @@ import com.example.weather.ui.components.WDialog
 import com.example.weather.ui.components.WImage
 import com.example.weather.ui.components.WLoading_Text
 import com.example.weather.ui.components.WText
+import com.example.weather.ui.components.convertVectorToBitmap
+import com.example.weather.ui.components.generateDominantColorState
 import com.example.weather.utils.component.rememberMutableDialogState
 import com.example.weather.utils.location.checkLocationAccess
 import com.example.weather.utils.location.rememberLocationRequestLauncher
@@ -92,29 +95,54 @@ private fun DailyForecastScreen(viewModel: ForecastViewModel = hiltViewModel()) 
         }, confirmTextButton = "Continue", cancelButtonText = "Exit")
     }
 
-    when (uiState) {
-        is DailyForecastUiState.Loading -> {
-            LoadingBody()
-        }
+    AnimatedContent(
+        uiState,
+        transitionSpec = {
+            fadeIn(animationSpec = tween(3000)) togetherWith fadeOut(
+                animationSpec = tween(1000)
+            )
+        },
+        label = "Animated Content"
+    ) { targetState ->
+        when (targetState) {
+            is DailyForecastUiState.Loading -> {
+                LoadingBody()
+            }
 
-        is DailyForecastUiState.Success -> {
-            DailyForeCastScreenBody((uiState as DailyForecastUiState.Success).allForecast)
-        }
+            is DailyForecastUiState.Success -> {
+                DailyForeCastScreenBody((uiState as DailyForecastUiState.Success).allForecast)
+            }
 
-        is DailyForecastUiState.Error -> {
-            dialogState.showDialog((uiState as DailyForecastUiState.Error).message)
-        }
+            is DailyForecastUiState.Error -> {
+                dialogState.showDialog((uiState as DailyForecastUiState.Error).message)
+            }
 
-        is DailyForecastUiState.LocationError -> {
-            dialogState.showDialog((uiState as DailyForecastUiState.LocationError).message)
+            is DailyForecastUiState.LocationError -> {
+                dialogState.showDialog((uiState as DailyForecastUiState.LocationError).message)
+            }
         }
     }
+
+
 }
 
 @Composable
 fun DailyForeCastScreenBody(
     uiState: List<DailyForecastView>
 ) {
+    val context = LocalContext.current
+    val image = convertVectorToBitmap(
+        context,
+        uiState.findCurrentForecast().weatherType.iconRes
+    )
+    val swatch =
+        remember(uiState.findCurrentForecast().weatherType.iconRes) { image!!.generateDominantColorState() }
+    val dominantColors = listOf(
+        Color(swatch.rgb).copy(alpha = 0.2f),
+        MaterialTheme.colorScheme.surface
+    )
+    val dominantGradient = remember { dominantColors }
+
     WColumn_Parent(
         header = {
             Header(
@@ -128,7 +156,8 @@ fun DailyForeCastScreenBody(
                 modifier = Modifier.weight(1f)
             )
         },
-        bottom = { Bottom(uiState) }
+        bottom = { Bottom(uiState) },
+        backgroundColor = dominantGradient
     )
 }
 
@@ -138,6 +167,7 @@ private fun Header(
     currentTime: String,
     modifier: Modifier = Modifier
 ) {
+    Spacer(modifier = Modifier.padding(top = 28.dp))
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -165,35 +195,34 @@ private fun Middle(
 ) {
     val textPadding = LocalTextPadding.current
     Column(
-        modifier.fillMaxWidth(),
+        modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.padding(top = 28.dp))
         WImage(
             imageId = currentForecast.weatherType.iconRes,
-            modifier = Modifier.sizeIn(
-                minWidth = 100.dp,
-                minHeight = 100.dp
-            )
+            modifier = Modifier.fillMaxWidth(0.7f)
         )
         Spacer(modifier = Modifier.padding(top = 28.dp))
         WText(
             text = currentForecast.weatherType.weatherDesc,
-            textColor = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.headlineSmall,
+            textColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.85f),
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(textPadding)
         )
         WText(
-            text = currentForecast.temperature2m.toString(),
+            text = currentForecast.temperature2m.toString()
+                .convertToTemperature(),
             textColor = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(textPadding)
         )
-        Spacer(modifier = Modifier.padding(top = 28.dp))
+        Spacer(modifier = Modifier.weight(1f))
         WImage(
             R.drawable.temperature,
             modifier = Modifier.fillMaxWidth(),
-            contentScale = ContentScale.Fit
+            contentScale = ContentScale.Inside
         )
     }
 
@@ -202,7 +231,7 @@ private fun Middle(
 @Composable
 private fun Bottom(list: List<DailyForecastView>) {
     DailyForecastList(
-        list, modifier = Modifier.navigationBarsPadding()
+        list
     )
 }
 
@@ -212,14 +241,18 @@ private fun DailyForecastList(
     modifier: Modifier = Modifier
 ) {
     val contentPadding = LocalLazyRowContentPadding.current
+
+
     LazyRow(
-        modifier = modifier,
+        modifier = modifier
+            .navigationBarsPadding(),
         horizontalArrangement = Arrangement.spacedBy(contentPadding)
     ) {
         items(items = list) { forecast ->
             DailyForecastListItem(
                 imageId = forecast.weatherType.iconRes,
-                temperature = forecast.temperature2m.toString(),
+                temperature = forecast.temperature2m.toString()
+                    .convertToTemperature(),
                 time = forecast.time
             )
         }
@@ -228,20 +261,20 @@ private fun DailyForecastList(
 
 @Composable
 private fun DailyForecastListItem(
-    modifier: Modifier = Modifier,
     @DrawableRes imageId: Int,
     temperature: String,
-    time: String
+    time: String,
+    modifier: Modifier = Modifier
 ) {
     val textPadding = LocalTextPadding.current
     Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(8.dp)),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = time,
             style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
             modifier = Modifier
                 .padding(textPadding)
         )
@@ -253,6 +286,7 @@ private fun DailyForecastListItem(
         Text(
             text = temperature,
             style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
             modifier = Modifier
                 .padding(textPadding)
         )
@@ -260,7 +294,7 @@ private fun DailyForecastListItem(
 }
 
 @Composable
-fun LoadingBody(modifier: Modifier = Modifier) {
+private fun LoadingBody(modifier: Modifier = Modifier) {
     Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         WLoading_Text(
             text = "Loading data Please Wait...",
@@ -270,8 +304,7 @@ fun LoadingBody(modifier: Modifier = Modifier) {
     }
 }
 
-fun Context.findActivity(): ComponentActivity? = when (this) {
-    is ComponentActivity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
+fun String.convertToTemperature() = buildString {
+    append(this@convertToTemperature.substringBefore("."))
+    append("°C")
 }

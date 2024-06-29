@@ -82,6 +82,7 @@ class ForecastViewModel @Inject constructor(
                     _uiState.update {
                         val list =
                             getDailyForecast().map(List<DailyForecast>::asExternalModel).first()
+
                         DailyForecastUiState.Success(list)
                     }
                 }
