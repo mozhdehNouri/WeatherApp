@@ -12,8 +12,7 @@ class ForecastDailyPreviewParameterProvider :
     PreviewParameterProvider<DailyForecastUiState> {
 
     override val values: Sequence<DailyForecastUiState.Success> =
-        sequenceOf(DailyForecastUiState.Success(dailyForecastView))
-
+        sequenceOf(DailyForecastUiState.Success(dailyForecastView, ""))
 }
 
 object ForecastDailyPreviewDataParameter {

@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -40,8 +43,10 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todoappwithcleanarchitecture.R
 import com.example.weather.MainActivity
+import com.example.weather.features.forecast.ui.utils.convertToTemperature
 import com.example.weather.ui.components.DialogType
 import com.example.weather.ui.components.LocalLazyRowContentPadding
+import com.example.weather.ui.components.LocalRowPadding
 import com.example.weather.ui.components.LocalTextPadding
 import com.example.weather.ui.components.WColumn_Parent
 import com.example.weather.ui.components.WDialog
@@ -64,37 +69,69 @@ fun DailyForecastRouter() {
 private fun DailyForecastScreen(viewModel: ForecastViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current.applicationContext
+    val isFirstTimeSendRequest by viewModel.isFirstTime.collectAsStateWithLifecycle()
     var locationPermission by remember { mutableStateOf(context.checkLocationAccess()) }
     val dialogState = rememberMutableDialogState(initialData = "")
-
+    var dialogType by remember {
+        mutableStateOf<ForecastDialogType>(ForecastDialogType.RequestError)
+    }
     val locationLauncher = rememberLocationRequestLauncher { result ->
-        if (result) viewModel.getForecast()
-        else dialogState.showDialog("You must provide location permission")
+        if (result) {
+            viewModel.sendLocationRequest()
+            if (isFirstTimeSendRequest) viewModel.writeLocationFirstTimeStatus()
+        } else {
+            dialogType =
+                ForecastDialogType.LocationError
+            dialogState.showDialog(context.getString(R.string.location_error_message))
+        }
         locationPermission = result
     }
-
     LifecycleEventEffect(event = Lifecycle.Event.ON_RESUME) {
         locationPermission = context.checkLocationAccess()
-    }
-
-    LaunchedEffect(locationPermission) {
-        if (locationPermission) {
-            viewModel.getForecast()
-        } else {
+        if (isFirstTimeSendRequest) {
             locationLauncher.requestLocationAccess()
+        } else if (locationPermission) {
+            viewModel.sendLocationRequest()
         }
     }
-    if (dialogState.isVisible.value) {
-        WDialog(type = DialogType.Continue, text = dialogState.dialogData.value, onCancelAction = {
-            val activity = MainActivity()
-            activity.finish()
-            exitProcess(0)
-        }, onConfirmAction = {
-            locationLauncher.requestLocationAccess()
-            dialogState.hideDialog()
-        }, confirmTextButton = "Continue", cancelButtonText = "Exit")
+    LaunchedEffect(key1 = uiState) {
+        if (!isFirstTimeSendRequest) {
+            viewModel.getDailyForecast()
+        }
     }
 
+    when (dialogType) {
+        ForecastDialogType.RequestError -> {
+            ForeCastDialog(dialogState.isVisible.value,
+                text = dialogState.dialogData.value,
+                onCancelAction = {
+                    dialogState.hideDialog()
+                },
+                onSubmitAction = {
+                    viewModel.sendLocationRequest()
+                    dialogState.hideDialog()
+                }
+            )
+        }
+
+        ForecastDialogType.LocationError -> {
+            ForeCastDialog(dialogState.isVisible.value,
+                text = dialogState.dialogData.value,
+                onCancelAction = {
+                    if (!isFirstTimeSendRequest) {
+                        dialogState.hideDialog()
+                    }
+                    val activity = MainActivity()
+                    activity.finish()
+                    exitProcess(0)
+                },
+                onSubmitAction = {
+                    locationLauncher.requestLocationAccess()
+                    dialogState.hideDialog()
+                }
+            )
+        }
+    }
     AnimatedContent(
         uiState,
         transitionSpec = {
@@ -104,85 +141,93 @@ private fun DailyForecastScreen(viewModel: ForecastViewModel = hiltViewModel()) 
         },
         label = "Animated Content"
     ) { targetState ->
-        when (targetState) {
-            is DailyForecastUiState.Loading -> {
-                LoadingBody()
-            }
+        if (!dialogState.isVisible.value) {
+            when (targetState) {
+                is DailyForecastUiState.Loading -> {
+                    LoadingBody()
+                }
 
-            is DailyForecastUiState.Success -> {
-                DailyForeCastScreenBody((uiState as DailyForecastUiState.Success).allForecast)
-            }
+                is DailyForecastUiState.Success -> {
+                    DailyForeCastScreenBody(
+                        weatherList = targetState.allForecast,
+                        updateTime = targetState.lastUpdate
+                    )
+                }
 
-            is DailyForecastUiState.Error -> {
-                dialogState.showDialog((uiState as DailyForecastUiState.Error).message)
-            }
+                is DailyForecastUiState.Error -> {
+                    dialogType = ForecastDialogType.RequestError
+                    dialogState.showDialog(targetState.message)
+                }
 
-            is DailyForecastUiState.LocationError -> {
-                dialogState.showDialog((uiState as DailyForecastUiState.LocationError).message)
+                is DailyForecastUiState.LocationError -> {
+                    dialogType = ForecastDialogType.LocationError
+                    dialogState.showDialog(targetState.message)
+                }
             }
         }
+
     }
-
-
 }
 
 @Composable
 fun DailyForeCastScreenBody(
-    uiState: List<DailyForecastView>
+    updateTime: String,
+    weatherList: List<DailyForecastView>
 ) {
     val context = LocalContext.current
     val image = convertVectorToBitmap(
         context,
-        uiState.findCurrentForecast().weatherType.iconRes
+        weatherList.findCurrentForecast().weatherType.iconRes
     )
     val swatch =
-        remember(uiState.findCurrentForecast().weatherType.iconRes) { image!!.generateDominantColorState() }
+        remember(weatherList.findCurrentForecast().weatherType.iconRes) { image!!.generateDominantColorState() }
     val dominantColors = listOf(
         Color(swatch.rgb).copy(alpha = 0.2f),
-        MaterialTheme.colorScheme.surface
+        MaterialTheme.colorScheme.primaryContainer
     )
     val dominantGradient = remember { dominantColors }
 
     WColumn_Parent(
         header = {
             Header(
-                cityName = "Tehran",
-                currentTime = "11:20"
+                currentTime = updateTime
             )
         },
         content = {
             Middle(
-                currentForecast = uiState.findCurrentForecast(),
+                currentForecast = weatherList.findCurrentForecast(),
                 modifier = Modifier.weight(1f)
             )
         },
-        bottom = { Bottom(uiState) },
+        bottom = { Bottom(weatherList) },
         backgroundColor = dominantGradient
     )
 }
 
 @Composable
 private fun Header(
-    cityName: String,
     currentTime: String,
     modifier: Modifier = Modifier
 ) {
-    Spacer(modifier = Modifier.padding(top = 28.dp))
+    val rowPadding = LocalRowPadding.current
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .padding(rowPadding)
             .statusBarsPadding(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         WText(
-            text = cityName,
-            textColor = MaterialTheme.colorScheme.onBackground,
+            text = stringResource(id = R.string.last_update_label),
+            textColor = MaterialTheme.colorScheme.onTertiaryContainer,
             style = MaterialTheme.typography.titleMedium
         )
         WText(
             text = currentTime,
-            textColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+            textColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(
+                alpha = 0.6f
+            ),
             style = MaterialTheme.typography.titleSmall
         )
     }
@@ -195,7 +240,13 @@ private fun Middle(
 ) {
     val textPadding = LocalTextPadding.current
     Column(
-        modifier.fillMaxSize(),
+        modifier
+            .fillMaxSize()
+            .border(
+                2.dp,
+                color = MaterialTheme.colorScheme.onBackground,
+                shape = RoundedCornerShape(8.dp)
+            ),
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -230,9 +281,17 @@ private fun Middle(
 
 @Composable
 private fun Bottom(list: List<DailyForecastView>) {
-    DailyForecastList(
-        list
-    )
+    Column {
+        WText(
+            text = stringResource(id = R.string.last_24_hour_label),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 4.dp),
+            style = MaterialTheme.typography.titleMedium,
+            textColor = MaterialTheme.colorScheme.onSurface
+        )
+        DailyForecastList(list)
+    }
 }
 
 @Composable
@@ -241,8 +300,6 @@ private fun DailyForecastList(
     modifier: Modifier = Modifier
 ) {
     val contentPadding = LocalLazyRowContentPadding.current
-
-
     LazyRow(
         modifier = modifier
             .navigationBarsPadding(),
@@ -267,8 +324,15 @@ private fun DailyForecastListItem(
     modifier: Modifier = Modifier
 ) {
     val textPadding = LocalTextPadding.current
+    val listItemPadding = LocalLazyRowContentPadding.current
     Column(
-        modifier = modifier,
+        modifier = modifier
+            .border(
+                1.dp,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(listItemPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -297,14 +361,33 @@ private fun DailyForecastListItem(
 private fun LoadingBody(modifier: Modifier = Modifier) {
     Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         WLoading_Text(
-            text = "Loading data Please Wait...",
+            text = stringResource(id = R.string.loading_text),
             textColor = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.titleMedium
         )
     }
 }
 
-fun String.convertToTemperature() = buildString {
-    append(this@convertToTemperature.substringBefore("."))
-    append("°C")
+@Composable
+fun ForeCastDialog(
+    dialogState: Boolean,
+    text: String,
+    onCancelAction: () -> Unit,
+    onSubmitAction: () -> Unit
+) {
+    if (dialogState) {
+        WDialog(
+            type = DialogType.Continue,
+            text = text,
+            onCancelAction = onCancelAction,
+            onConfirmAction = onSubmitAction,
+            confirmTextButton = stringResource(id = R.string.continue_label),
+            cancelButtonText = stringResource(id = R.string.dismiss_label)
+        )
+    }
+}
+
+enum class ForecastDialogType {
+    LocationError,
+    RequestError
 }

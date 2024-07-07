@@ -3,6 +3,7 @@ package com.example.weather.ui.components
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -122,7 +123,10 @@ private fun ContinueDialog(
     AlertDialog(
         onDismissRequest = {},
         confirmButton = {
-            Button(onClick = onConfirmAction) {
+            Button(
+                onClick = onConfirmAction,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+            ) {
                 Text(
                     text = confirmTextButton,
                     style = confirmStyle.second,
@@ -131,7 +135,10 @@ private fun ContinueDialog(
             }
         },
         dismissButton = {
-            Button(onClick = onCancelAction) {
+            Button(
+                onClick = onCancelAction,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+            ) {
                 Text(
                     text = cancelButtonText,
                     style = cancelStyle.second,

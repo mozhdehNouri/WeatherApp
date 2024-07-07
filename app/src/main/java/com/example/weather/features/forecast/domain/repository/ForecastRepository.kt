@@ -9,10 +9,10 @@ interface ForecastRepository {
     suspend fun getForecastFromNetwork(
         latitude: Double,
         longitude: Double
-    ): AppResult<Boolean>
+    ): AppResult<Unit>
 
     fun getDailyForecastFromDatabase(): Flow<List<DailyForecast>>
-
+    fun getLastUpdate(): Flow<Long>
     fun isFirstTimeRead(): Flow<Preferences>
     fun isFirstTimeWrite(): Flow<Boolean>
 }
