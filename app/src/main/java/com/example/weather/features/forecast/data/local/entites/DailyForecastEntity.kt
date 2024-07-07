@@ -22,9 +22,7 @@ data class DailyForecastEntity internal constructor(
 )
 
 @Entity
-data class LocationInfo(
-    @PrimaryKey(autoGenerate = false)
-    val index: Int = 0,
-    val latitude: Float,
-    val longitude: Float
+data class LastTimeUpdate(
+    @PrimaryKey
+    val lastTime: Long
 )

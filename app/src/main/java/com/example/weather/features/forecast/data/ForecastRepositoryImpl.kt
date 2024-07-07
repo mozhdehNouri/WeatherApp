@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.datastore.preferences.core.Preferences
 import com.example.weather.features.forecast.data.local.ForecastLocalDataSource
 import com.example.weather.features.forecast.data.local.entites.DailyForecastEntity
-import com.example.weather.features.forecast.data.local.entites.LocationInfo
 import com.example.weather.features.forecast.data.local.entites.mapper.toExternalModel
 import com.example.weather.features.forecast.data.remote.ForecastRemoteDataSource
 import com.example.weather.features.forecast.domain.model.DailyForecast
@@ -25,7 +24,7 @@ class ForecastRepositoryImpl @Inject constructor(
 
     override suspend fun getForecastFromNetwork(
         latitude: Double, longitude: Double
-    ): AppResult<Boolean> {
+    ): AppResult<Unit> {
         if (!isInternetAvailable(context)) {
             return AppResult.Error(error = "No Internet connection")
         }
@@ -52,20 +51,17 @@ class ForecastRepositoryImpl @Inject constructor(
                                 temperature2m = response.temperature2m[index],
                                 time,
                                 visibility = response.visibility[index],
-                                weatherCode = response.weatherCode[index],
+                                weatherCode = response.weatherCode[index]
+
                             )
                         )
                     }
                 }
                 localDataSource.addDailyForecast(
                     dailyForecast = dailyForecastList,
-                    locationInfo = LocationInfo(
-                        latitude = result.data.latitude,
-                        longitude = result.data.longitude
-                    )
+                    lastUpdate = System.currentTimeMillis()
                 )
-
-                AppResult.Success(true)
+                AppResult.Success(Unit)
             }
 
             is AppResult.Error -> {
@@ -76,6 +72,9 @@ class ForecastRepositoryImpl @Inject constructor(
 
     override fun getDailyForecastFromDatabase(): Flow<List<DailyForecast>> =
         localDataSource.getDailyForecast().map { it.toExternalModel() }
+
+    override fun getLastUpdate(): Flow<Long> =
+        localDataSource.getLastUpdate()
 
 
     override fun isFirstTimeRead(): Flow<Preferences> =

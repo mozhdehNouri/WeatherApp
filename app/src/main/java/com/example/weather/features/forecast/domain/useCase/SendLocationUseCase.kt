@@ -10,7 +10,7 @@ class SendLocationUseCase @Inject constructor(
     suspend operator fun invoke(
         latitude: Double,
         longitude: Double
-    ): AppResult<Boolean> {
+    ): AppResult<Unit> {
         return repository.getForecastFromNetwork(
             latitude = latitude,
             longitude = longitude

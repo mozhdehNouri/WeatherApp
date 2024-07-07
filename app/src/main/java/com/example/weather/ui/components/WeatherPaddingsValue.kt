@@ -19,7 +19,7 @@ val LocalVerticalSpacerPadding =
 val LocalLazyRowContentPadding =
     staticCompositionLocalOf { LazyRowContentPadding }
 
-val LazyRowContentPadding = 12.dp
+val LazyRowContentPadding = 5.dp
 val VerticalSpacerPadding = PaddingValues(vertical = 8.dp)
 val RootPadding =
     PaddingValues(start = 12.dp, top = 8.dp, end = 12.dp, bottom = 8.dp)

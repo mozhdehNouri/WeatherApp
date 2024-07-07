@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import com.example.weather.features.forecast.data.local.entites.DailyForecastEntity
-import com.example.weather.features.forecast.data.local.entites.LocationInfo
+import com.example.weather.features.forecast.data.local.entites.LastTimeUpdate
 import com.example.weather.utils.di.weatherDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -19,11 +19,14 @@ class ForecastLocalDataSourceImpl @Inject constructor(
 
     override suspend fun addDailyForecast(
         dailyForecast: List<DailyForecastEntity>,
-        locationInfo: LocationInfo
-    ) = dao.addDailyForecast(dailyForecast, locationInfo)
+        lastUpdate: Long
+    ) = dao.upsertDailyForecast(dailyForecast, LastTimeUpdate(lastUpdate))
 
     override fun getDailyForecast(): Flow<List<DailyForecastEntity>> =
         dao.getDailyForecast()
+
+    override fun getLastUpdate(): Flow<Long> = dao.lastTimeUpdate()
+
 
     override fun isFirstTimeRead(): Flow<Preferences> =
         context.weatherDataStore.data

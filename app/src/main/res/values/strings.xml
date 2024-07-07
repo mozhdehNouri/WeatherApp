@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">weatherAlarm</string>
     <string name="welcome">Welcome</string>
+    <string name="location_error_message">You must provide location permission</string>
+    <string name="continue_label">Continue</string>
+    <string name="exit_label">Exit</string>
+    <string name="dismiss_label">Dismiss</string>
+    <string name="last_update_label">Last update</string>
+    <string name="last_24_hour_label">Last 24 Hour</string>
+    <string name="loading_text">Loading data Please Wait</string>
+
+
 </resources>

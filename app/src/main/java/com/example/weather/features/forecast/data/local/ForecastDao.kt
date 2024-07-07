@@ -1,23 +1,25 @@
 package com.example.weather.features.forecast.data.local
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import com.example.weather.features.forecast.data.local.entites.DailyForecastEntity
-import com.example.weather.features.forecast.data.local.entites.LocationInfo
+import com.example.weather.features.forecast.data.local.entites.LastTimeUpdate
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ForecastDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addDailyForecast(
+    @Upsert
+    suspend fun upsertDailyForecast(
         hourlyForecast: List<DailyForecastEntity>,
-        locationInfo: LocationInfo
+        lastUpdate: LastTimeUpdate
     )
 
     @Query("select * from DailyForecastEntity")
     fun getDailyForecast(): Flow<List<DailyForecastEntity>>
+
+    @Query("select lastTime from LastTimeUpdate")
+    fun lastTimeUpdate(): Flow<Long>
 
 }

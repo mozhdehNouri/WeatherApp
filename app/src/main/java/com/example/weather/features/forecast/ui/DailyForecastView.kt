@@ -1,7 +1,9 @@
 package com.example.weather.features.forecast.ui
 
 import androidx.compose.runtime.Immutable
+import com.example.weather.features.forecast.ui.utils.extractTime
 import com.example.weather.utils.WeatherType
+import java.time.LocalTime
 
 @Immutable
 data class DailyForecastView(
@@ -19,3 +21,9 @@ data class DailyForecastView(
     val visibility: Double = 0.0,
     val weatherType: WeatherType = WeatherType.ClearSky
 )
+
+fun List<DailyForecastView>.findCurrentForecast(): DailyForecastView {
+    return this.find {
+        it.time.extractTime().hour == LocalTime.now().hour
+    } ?: DailyForecastView()
+}

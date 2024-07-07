@@ -12,6 +12,6 @@ fun ForecastNewPreview(
     uiState: List<DailyForecastView>
 ) {
     WeatherAppTheme {
-        DailyForeCastScreenBody(uiState)
+        DailyForeCastScreenBody("", uiState)
     }
 }
